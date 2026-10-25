@@ -2,29 +2,34 @@ package com.project.employeService.service;
 
 import com.project.employeService.DTO.EmployeeRequestDTO;
 import com.project.employeService.DTO.EmployeeResponseDTO;
+import com.project.employeService.Exception.EmailExists;
 import com.project.employeService.Exception.EmployeeNotFound;
 import com.project.employeService.entity.Employees;
 import com.project.employeService.repository.EmployeeRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.math.BigInteger;
 
 @Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public EmployeeResponseDTO CreateEmployee(EmployeeRequestDTO request) {
+    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
 
         Employees emp = new Employees();
-
         emp.setName(request.getName());
-        emp.setEmail(request.getEmail());
-        emp.setPassword(request.getPassword());
-        emp.setRole(request.getRole());
+        if(employeeRepository.existsByEmailIgnoreCase(request.getEmail())){
+            throw new EmailExists("Email Id already exists ");
+        }else {
+            emp.setEmail(request.getEmail());
+        }
+        emp.setPassword(passwordEncoder.encode(request.getPassword()));
+        emp.setRole("EMPLOYEE");
 
         Employees savedEmp = employeeRepository.save(emp);
 
@@ -36,7 +41,7 @@ public class EmployeeService {
         return response;
     }
 
-    public EmployeeResponseDTO getEmpById(BigInteger id) {
+    public EmployeeResponseDTO getEmpById(Long id) {
         Employees found = employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFound("Employee not found with Employee Id" + id));
 
         EmployeeResponseDTO foundEmp = new EmployeeResponseDTO();

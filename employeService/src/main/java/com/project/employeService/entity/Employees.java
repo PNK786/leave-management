@@ -12,17 +12,17 @@ public class Employees {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+    private Long id;
     private String name;
     private String email;
     private String password;
     private String role;
 
-    public BigInteger getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -58,7 +58,7 @@ public class Employees {
         this.role = role;
     }
 
-    public Employees(BigInteger id, String name, String email, String password, String role) {
+    public Employees(Long id, String name, String email, String password, String role) {
         this.id = id;
         this.name = name;
         this.email = email;

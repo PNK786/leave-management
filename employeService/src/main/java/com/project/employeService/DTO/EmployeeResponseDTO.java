@@ -1,19 +1,17 @@
 package com.project.employeService.DTO;
 
-import java.math.BigInteger;
-
 public class EmployeeResponseDTO
 {
-    private BigInteger id;
+    private Long id;
     private String name;
     private String email;
     private String role;
 
-    public BigInteger getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -41,7 +39,7 @@ public class EmployeeResponseDTO
         this.role = role;
     }
 
-    public EmployeeResponseDTO(BigInteger id, String name, String email, String role) {
+    public EmployeeResponseDTO(Long id, String name, String email, String role) {
         this.id = id;
         this.name = name;
         this.email = email;
