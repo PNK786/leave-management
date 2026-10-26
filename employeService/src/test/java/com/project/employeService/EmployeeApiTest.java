@@ -71,12 +71,12 @@ public class EmployeeApiTest
     }
 
     @Test void getNonexistent_returns404() throws Exception {
-        mockMvc.perform(get("/api/employee/9999").with(httpBasic("admin", "admin123")))
+        mockMvc.perform(get("/api/emp/9999").with(httpBasic("admin", "admin123")))
                 .andExpect(status().isNotFound());
     }
 
     @Test void getWithoutAuth_returns401() throws Exception {
-        mockMvc.perform(get("/api/employee/1")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/emp/1")).andExpect(status().isUnauthorized());
     }
 
     @Test void passwordIsStoredHashed() throws Exception {
