@@ -71,17 +71,17 @@ public class EmployeeApiTest
     }
 
     @Test void getNonexistent_returns404() throws Exception {
-        mockMvc.perform(get("/api/employee/9999").with(httpBasic("admin", "admin123")))
+        mockMvc.perform(get("/api/emp/9999").with(httpBasic("admin", "admin123")))
                 .andExpect(status().isNotFound());
     }
 
     @Test void getWithoutAuth_returns401() throws Exception {
-        mockMvc.perform(get("/api/employee/1")).andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/emp/1")).andExpect(status().isUnauthorized());
     }
 
     @Test void passwordIsStoredHashed() throws Exception {
         register("Afroz", "afroz@gmail.com");
-        Employees saved = repository.findByEmail("afroz@gmail.com").get();
+        Employees saved = repository.findByEmail("afroz@gmail.com").orElseThrow();
 
         assertNotEquals("Secret123", saved.getPassword());
         assertTrue(passwordEncoder.matches("Secret123", saved.getPassword()));
@@ -97,5 +97,33 @@ public class EmployeeApiTest
 
         assertEquals("EMPLOYEE",
                 repository.findByEmail("evil@gmail.com").get().getRole());
+    }
+
+    @Test
+    void register_withNumbersInName_returns400() throws Exception {
+        mockMvc.perform(post("/api/employee")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                  "name": "Afroz123",
+                  "email": "afroz123@example.com",
+                  "password": "Password@123"
+                }
+                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void register_withSpecialCharactersInName_returns400() throws Exception {
+        mockMvc.perform(post("/api/employee")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                  "name": "Afroz@123",
+                  "email": "afroz124@example.com",
+                  "password": "Password@123"
+                }
+                """))
+                .andExpect(status().isBadRequest());
     }
 }

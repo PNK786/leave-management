@@ -2,12 +2,14 @@ package com.project.employeService.DTO;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class EmployeeRequestDTO {
 
     @NotBlank(message = "Name is Required")
     @Size(min=3,max=100)
+    @Pattern(regexp = "^[A-Za-z]+(?: [A-Za-z]+)*$", message = "Name must contain only letters and single space between words")
     private String name;
     @NotBlank(message = "Email is Required")
     @Email
