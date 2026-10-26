@@ -24,6 +24,20 @@ public class EmployeeRequestDTO {
         this.password = password;
     }
 
+    public EmployeeRequestDTO() {
+    }
+
+    public void setName(@NotBlank(message = "Name is Required") @Size(min = 3, max = 100) String name) {
+        this.name = name;
+    }
+
+    public void setEmail(@NotBlank(message = "Email is Required") @Email String email) {
+        this.email = email;
+    }
+
+    public void setPassword(@NotBlank(message = "Password is Required") @Size(min = 7, max = 72) String password) {
+        this.password = password;
+    }
 
     public String getName() {
         return name;
@@ -40,7 +54,6 @@ public class EmployeeRequestDTO {
         return "EmployeeRequestDTO{" +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 '}';
     }
 }

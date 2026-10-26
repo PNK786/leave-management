@@ -1,13 +1,9 @@
 package com.project.employeService.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-import java.math.BigInteger;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "employees",uniqueConstraints = {@UniqueConstraint(name = "uk_employees_email",columnNames = "email")})
 public class Employees {
 
     @Id
