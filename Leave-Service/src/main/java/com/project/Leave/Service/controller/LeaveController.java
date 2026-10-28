@@ -1,9 +1,9 @@
 package com.project.Leave.Service.controller;
 
 import com.project.Leave.Service.DTO.LeaveRequestDTO;
+import com.project.Leave.Service.DTO.LeaveResponseDTO;
 import com.project.Leave.Service.service.LeaveManagementService;
 import jakarta.validation.Valid;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +22,9 @@ public class LeaveController
         this.leaveManagementService = leaveManagementService;
     }
 
-    @PostMapping("leaves")
-    public ResponseEntity<LeaveRequestDTO> leaveRequest(@Valid  @RequestBody LeaveRequestDTO request, Authentication authentication){
-        leaveManagementService.applyLeave(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(request);
+    @PostMapping("/leaves")
+    public ResponseEntity<LeaveResponseDTO> leaveRequest(@Valid  @RequestBody LeaveRequestDTO request){
+           LeaveResponseDTO empResponse= leaveManagementService.applyLeave(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(empResponse);
     }
 }

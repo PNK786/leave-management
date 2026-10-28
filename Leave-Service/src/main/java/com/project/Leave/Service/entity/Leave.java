@@ -1,6 +1,7 @@
 package com.project.Leave.Service.entity;
 
 import jakarta.persistence.*;
+import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class Leave
     private  Long employeeId;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @NonNull()
     private LeaveType leaveType;
     private LocalDate startDate;
     private LocalDate endDate;
