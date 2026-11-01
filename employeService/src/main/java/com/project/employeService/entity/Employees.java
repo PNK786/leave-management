@@ -12,7 +12,8 @@ public class Employees {
     private String name;
     private String email;
     private String password;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     public Long getId() {
         return id;
@@ -46,15 +47,15 @@ public class Employees {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
-    public Employees(Long id, String name, String email, String password, String role) {
+    public Employees(Long id, String name, String email, String password, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;

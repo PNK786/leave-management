@@ -1,12 +1,15 @@
 package com.project.Leave.Service.DTO;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.Leave.Service.entity.LeaveType;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.*;
+import com.project.Leave.Service.validation.ValidDateRange;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
+@ValidDateRange
 public class LeaveRequestDTO
 {
     @NotNull(message = "empId is Required")
@@ -16,7 +19,6 @@ public class LeaveRequestDTO
     private String reason;
     @NotNull(message = "Start date is required")
     @FutureOrPresent(message = "Start date cannot be in the past")
-    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
     @NotNull(message = "End date is required")
     @FutureOrPresent(message = "End date cannot be in the past")
@@ -24,12 +26,6 @@ public class LeaveRequestDTO
     @NotNull(message = "leaveType is required")
     private LeaveType leaveType;
 
-    @JsonIgnore
-    @AssertTrue(message = "End date must be on or after start date")
-    public boolean isEndDateAfterStartDate() {
-        if (startDate == null || endDate == null) return true; // @NotNull reports the missing one
-        return !endDate.isBefore(startDate);
-    }
 
     public Long getEmpId() {
         return empId;

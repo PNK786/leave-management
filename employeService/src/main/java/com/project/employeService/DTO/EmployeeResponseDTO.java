@@ -1,11 +1,13 @@
 package com.project.employeService.DTO;
 
+import com.project.employeService.entity.Role;
+
 public class EmployeeResponseDTO
 {
     private Long id;
     private String name;
     private String email;
-    private String role;
+    private Role role;
 
     public Long getId() {
         return id;
@@ -31,15 +33,15 @@ public class EmployeeResponseDTO
         this.email = email;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
-    public EmployeeResponseDTO(Long id, String name, String email, String role) {
+    public EmployeeResponseDTO(Long id, String name, String email, Role role) {
         this.id = id;
         this.name = name;
         this.email = email;

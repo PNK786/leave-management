@@ -5,6 +5,7 @@ import com.project.employeService.DTO.EmployeeResponseDTO;
 import com.project.employeService.Exception.EmailExists;
 import com.project.employeService.Exception.EmployeeNotFound;
 import com.project.employeService.entity.Employees;
+import com.project.employeService.entity.Role;
 import com.project.employeService.repository.EmployeeRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class EmployeeService {
             emp.setEmail(request.getEmail());
         }
         emp.setPassword(passwordEncoder.encode(request.getPassword()));
-        emp.setRole("EMPLOYEE");
+        emp.setRole(Role.EMPLOYEE);
 
         Employees savedEmp = employeeRepository.save(emp);
 

@@ -20,8 +20,16 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors()
                 .forEach(err->errors.putIfAbsent(err.getField(),err.getDefaultMessage()));
 
+        ex.getBindingResult().getFieldErrors()
+                .forEach(err->errors.putIfAbsent(err.getObjectName(),err.getDefaultMessage()));
         ValidationErrorResponse body= new ValidationErrorResponse(HttpStatus.BAD_REQUEST
                 .value(),"Validation failed",errors);
         return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(LeaveRecordNotFoundException.class)
+    public ResponseEntity<LeaveNotFound> leaveNotFound(LeaveRecordNotFoundException ex){
+        LeaveNotFound error = new LeaveNotFound(HttpStatus.NOT_FOUND.value(),ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }
