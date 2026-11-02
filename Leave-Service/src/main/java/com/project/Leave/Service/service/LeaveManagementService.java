@@ -7,6 +7,7 @@ import com.project.Leave.Service.entity.Leave;
 import com.project.Leave.Service.entity.LeaveStatus;
 import com.project.Leave.Service.entity.LeaveType;
 import com.project.Leave.Service.exception.LeaveRecordNotFoundException;
+import com.project.Leave.Service.exception.LeaveResponseException;
 import com.project.Leave.Service.repository.LeaveManagementRepository;
 import org.springframework.stereotype.Service;
 
@@ -77,7 +78,7 @@ public class LeaveManagementService {
                 orElseThrow(() -> new LeaveRecordNotFoundException("Leave request not found with id " + id));
 
         if (leave.getStatus() != LeaveStatus.PENDING) {
-            throw new IllegalStateException("only pending leaves can be Approved");
+            throw new LeaveResponseException("only pending leaves can be Approved");
         }
         leave.setStatus(LeaveStatus.APPROVED);
         Leave rejected = leaveManagementRepository.save(leave);
@@ -94,7 +95,7 @@ public class LeaveManagementService {
         Leave leave = leaveManagementRepository.findById(id).
                 orElseThrow(() -> new LeaveRecordNotFoundException("Leave request not found with id " + id));
         if (leave.getStatus() != LeaveStatus.PENDING) {
-            throw new IllegalStateException("only pending leaves can be rejected");
+            throw new LeaveResponseException("only pending leaves can be rejected");
         }
         leave.setStatus(LeaveStatus.REJECTED);
         Leave rejected = leaveManagementRepository.save(leave);

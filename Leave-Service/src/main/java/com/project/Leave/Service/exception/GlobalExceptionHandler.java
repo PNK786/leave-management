@@ -32,4 +32,10 @@ public class GlobalExceptionHandler {
         LeaveNotFound error = new LeaveNotFound(HttpStatus.NOT_FOUND.value(),ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    @ExceptionHandler(LeaveResponseException.class)
+    public ResponseEntity<LeaveResponse> leaveStatusRejected(LeaveResponseException ex){
+         LeaveResponse response= new LeaveResponse(HttpStatus.FORBIDDEN.value(),ex.getMessage());
+         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
 }
