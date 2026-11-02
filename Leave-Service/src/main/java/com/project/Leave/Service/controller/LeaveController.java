@@ -1,5 +1,6 @@
 package com.project.Leave.Service.controller;
 
+import com.project.Leave.Service.DTO.LeaveBalanceDTO;
 import com.project.Leave.Service.DTO.LeaveRequestDTO;
 import com.project.Leave.Service.DTO.LeaveResponseDTO;
 import com.project.Leave.Service.entity.LeaveStatus;
@@ -49,6 +50,13 @@ public class LeaveController {
     public ResponseEntity<LeaveResponseDTO> rejectLeaveRequest(@PathVariable Long id) {
         LeaveResponseDTO rejectRequest = leaveManagementService.approveLeave(id);
         return ResponseEntity.status(HttpStatus.OK).body(rejectRequest);
+    }
+
+    @GetMapping("/leaves/balance/{empId}")
+    public ResponseEntity<LeaveBalanceDTO> getBalance(@PathVariable Long empId){
+
+          LeaveBalanceDTO balanceLeaves=leaveManagementService.getBalance(empId);
+          return ResponseEntity.status(HttpStatus.FOUND).body(balanceLeaves);
     }
 
 }

@@ -1,15 +1,20 @@
 package com.project.Leave.Service.service;
 
+import com.project.Leave.Service.DTO.LeaveBalanceDTO;
 import com.project.Leave.Service.DTO.LeaveRequestDTO;
 import com.project.Leave.Service.DTO.LeaveResponseDTO;
 import com.project.Leave.Service.entity.Leave;
 import com.project.Leave.Service.entity.LeaveStatus;
+import com.project.Leave.Service.entity.LeaveType;
 import com.project.Leave.Service.exception.LeaveRecordNotFoundException;
 import com.project.Leave.Service.repository.LeaveManagementRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LeaveManagementService {
@@ -60,7 +65,6 @@ public class LeaveManagementService {
 
     public List<LeaveResponseDTO> pendingLeaveRequests(LeaveStatus status) {
         List<Leave> byLeaveStatus = leaveManagementRepository.findBystatus(status);
-
         if (byLeaveStatus.isEmpty()) {
             throw new LeaveRecordNotFoundException("no Leave record found with this status  " + status);
         }
@@ -68,7 +72,7 @@ public class LeaveManagementService {
                 .toList();
     }
 
-    public LeaveResponseDTO approveLeave(Long id){
+    public LeaveResponseDTO approveLeave(Long id) {
         Leave leave = leaveManagementRepository.findById(id).
                 orElseThrow(() -> new LeaveRecordNotFoundException("Leave request not found with id " + id));
 
@@ -76,39 +80,57 @@ public class LeaveManagementService {
             throw new IllegalStateException("only pending leaves can be Approved");
         }
         leave.setStatus(LeaveStatus.APPROVED);
-
         Leave rejected = leaveManagementRepository.save(leave);
-
         LeaveResponseDTO response = new LeaveResponseDTO();
-
         response.setLeaveId(rejected.getId());
         response.setLeaveType(rejected.getLeaveType());
         response.setReason(rejected.getReason());
         response.setDuration(ChronoUnit.DAYS.between(rejected.getStartDate(), rejected.getEndDate()) + 1);
         response.setStatus(rejected.getStatus());
-
         return response;
     }
 
     public LeaveResponseDTO rejectLeave(Long id) {
         Leave leave = leaveManagementRepository.findById(id).
                 orElseThrow(() -> new LeaveRecordNotFoundException("Leave request not found with id " + id));
-
         if (leave.getStatus() != LeaveStatus.PENDING) {
             throw new IllegalStateException("only pending leaves can be rejected");
         }
         leave.setStatus(LeaveStatus.REJECTED);
-
         Leave rejected = leaveManagementRepository.save(leave);
-
         LeaveResponseDTO response = new LeaveResponseDTO();
-
         response.setLeaveId(rejected.getId());
         response.setLeaveType(rejected.getLeaveType());
         response.setReason(rejected.getReason());
         response.setDuration(ChronoUnit.DAYS.between(rejected.getStartDate(), rejected.getEndDate()) + 1);
         response.setStatus(rejected.getStatus());
-
         return response;
+    }
+
+    public int usedDays(Long employeeId, LeaveType leaveType, int year) {
+        LocalDate yearStart = LocalDate.of(year, 1, 1);
+        LocalDate yearEnd = LocalDate.of(year, 12, 31);
+
+        return leaveManagementRepository.findByEmployeeIdAndLeaveTypeAndStatusIn(
+                        employeeId, leaveType, List.of(LeaveStatus.PENDING, LeaveStatus.APPROVED))
+                .stream().mapToInt(n -> {
+                    LocalDate from = n.getStartDate().isBefore(yearStart) ? yearStart : n.getStartDate();
+                    LocalDate to = n.getEndDate().isAfter(yearEnd) ? yearEnd : n.getEndDate();
+
+                    if (to.isBefore(from)) return 0;
+                    return (int) ChronoUnit.DAYS.between(from, to) + 1;
+                })
+                .sum();
+    }
+
+    public LeaveBalanceDTO getBalance(Long employeeId) {
+        int year = LocalDate.now().getYear();
+        Map<LeaveType, Integer> remaining = new EnumMap<>(LeaveType.class);
+
+        for (LeaveType type : LeaveType.values()) {
+            remaining.put(type, type.getYearlyQuota() - usedDays(employeeId, type, year));
+        }
+
+        return new LeaveBalanceDTO(employeeId, year, remaining);
     }
 }

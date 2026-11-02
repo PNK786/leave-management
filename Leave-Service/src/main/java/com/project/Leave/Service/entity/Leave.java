@@ -1,7 +1,6 @@
 package com.project.Leave.Service.entity;
 
 import jakarta.persistence.*;
-import org.jspecify.annotations.NonNull;
 
 import java.time.LocalDate;
 
