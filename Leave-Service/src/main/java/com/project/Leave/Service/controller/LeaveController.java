@@ -31,23 +31,23 @@ public class LeaveController {
     @GetMapping("/leaves/my/{empId}")
     public ResponseEntity<List<LeaveResponseDTO>> getAllLeaveRequestByEmpId(@PathVariable Long empId) {
         List<LeaveResponseDTO> allLeaves = leaveManagementService.allLeaveRequests(empId);
-        return ResponseEntity.status(HttpStatus.FOUND).body(allLeaves);
+        return ResponseEntity.ok(allLeaves);
     }
 
-    @GetMapping("/leaves/pending/{status}")
-    public ResponseEntity<List<LeaveResponseDTO>> accessPendingRequest(@PathVariable LeaveStatus status) {
-        List<LeaveResponseDTO> pendingRequests = leaveManagementService.pendingLeaveRequests(status);
-        return ResponseEntity.status(HttpStatus.FOUND).body(pendingRequests);
+    @GetMapping("/leaves/pending")
+    public ResponseEntity<List<LeaveResponseDTO>> accessPendingRequest() {
+        List<LeaveResponseDTO> pendingRequests = leaveManagementService.pendingLeaveRequests(LeaveStatus.PENDING);
+        return ResponseEntity.ok(pendingRequests);
     }
 
     @PutMapping("/leaves/{id}/reject")
-    public ResponseEntity<LeaveResponseDTO> approveLeaveRequest(@PathVariable Long id) {
+    public ResponseEntity<LeaveResponseDTO> rejectLeaveRequest(@PathVariable Long id) {
         LeaveResponseDTO rejectRequest = leaveManagementService.rejectLeave(id);
         return ResponseEntity.status(HttpStatus.OK).body(rejectRequest);
     }
 
     @PutMapping("/leaves/{id}/approve")
-    public ResponseEntity<LeaveResponseDTO> rejectLeaveRequest(@PathVariable Long id) {
+    public ResponseEntity<LeaveResponseDTO> approveLeaveRequest(@PathVariable Long id) {
         LeaveResponseDTO rejectRequest = leaveManagementService.approveLeave(id);
         return ResponseEntity.status(HttpStatus.OK).body(rejectRequest);
     }
@@ -56,7 +56,7 @@ public class LeaveController {
     public ResponseEntity<LeaveBalanceDTO> getBalance(@PathVariable Long empId){
 
           LeaveBalanceDTO balanceLeaves=leaveManagementService.getBalance(empId);
-          return ResponseEntity.status(HttpStatus.FOUND).body(balanceLeaves);
+          return ResponseEntity.ok(balanceLeaves);
     }
 
 }

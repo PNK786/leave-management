@@ -3,10 +3,15 @@ package com.project.Leave.Service.DTO;
 import com.project.Leave.Service.entity.LeaveStatus;
 import com.project.Leave.Service.entity.LeaveType;
 
-public class LeaveResponseDTO
+import java.time.LocalDate;
+
+public class    LeaveResponseDTO
 {
    private Long leaveId;
+   private Long employeeId;
    private String reason;
+   private LocalDate startDate;
+   private LocalDate endDate;
    private Long Duration;
    private LeaveType leaveType;
    private LeaveStatus status;
@@ -54,9 +59,36 @@ public class LeaveResponseDTO
     public LeaveResponseDTO() {
     }
 
-    public LeaveResponseDTO(Long leaveId, String reason, Long duration, LeaveType leaveType, LeaveStatus status) {
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public LeaveResponseDTO(Long leaveId, Long employeeId, String reason, LocalDate startDate, LocalDate endDate, Long duration, LeaveType leaveType, LeaveStatus status) {
         this.leaveId = leaveId;
+        this.employeeId = employeeId;
         this.reason = reason;
+        this.startDate = startDate;
+        this.endDate = endDate;
         Duration = duration;
         this.leaveType = leaveType;
         this.status = status;

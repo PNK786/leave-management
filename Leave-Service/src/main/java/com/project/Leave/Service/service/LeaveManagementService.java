@@ -58,6 +58,9 @@ public class LeaveManagementService {
         LeaveResponseDTO dto = new LeaveResponseDTO();
         dto.setLeaveId(leave.getId());
         dto.setReason(leave.getReason());
+        dto.setStartDate(leave.getStartDate());
+        dto.setEndDate(leave.getEndDate());
+        dto.setEmployeeId(leave.getEmployeeId());
         dto.setDuration(ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate()) + 1);
         dto.setLeaveType(leave.getLeaveType());
         dto.setStatus(leave.getStatus());
