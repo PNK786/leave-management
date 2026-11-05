@@ -20,7 +20,7 @@ public class EmployeServiceApplication {
     CommandLineRunner seeAdmin(EmployeeRepository repo, PasswordEncoder encoder, @Value("${app.admin.password}")
     String adminPassword) {
         return args -> {
-            if (repo.existsByEmailIgnoreCase("admin@company.com")) {
+            if (repo.existsByEmailIgnoreCase("manager@company.com")) {
                 Employees admin = new Employees();
                 admin.setName("MANAGER");
                 admin.setEmail("manager@company.com");
