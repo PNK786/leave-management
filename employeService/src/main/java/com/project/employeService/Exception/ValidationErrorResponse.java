@@ -3,12 +3,18 @@ package com.project.employeService.Exception;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-public class ValidationErrorResponse
-{
+public class ValidationErrorResponse {
     private int status;
     private String message;
-    private Map<String,String> errors;
+    private Map<String, String> errors;
     private LocalDateTime timeStamp;
+
+    public ValidationErrorResponse(int status, String message, Map<String, String> errors) {
+        this.status = status;
+        this.message = message;
+        this.errors = errors;
+        this.timeStamp = LocalDateTime.now();
+    }
 
     public int getStatus() {
         return status;
@@ -24,12 +30,5 @@ public class ValidationErrorResponse
 
     public LocalDateTime getTimeStamp() {
         return timeStamp;
-    }
-
-    public ValidationErrorResponse(int status, String message, Map<String, String> errors) {
-        this.status = status;
-        this.message = message;
-        this.errors = errors;
-        this.timeStamp =LocalDateTime.now();
     }
 }

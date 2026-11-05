@@ -2,12 +2,21 @@ package com.project.employeService.DTO;
 
 import com.project.employeService.entity.Role;
 
-public class EmployeeResponseDTO
-{
+public class EmployeeResponseDTO {
     private Long id;
     private String name;
     private String email;
     private Role role;
+
+    public EmployeeResponseDTO(Long id, String name, String email, Role role) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.role = role;
+    }
+
+    public EmployeeResponseDTO() {
+    }
 
     public Long getId() {
         return id;
@@ -41,15 +50,6 @@ public class EmployeeResponseDTO
         this.role = role;
     }
 
-    public EmployeeResponseDTO(Long id, String name, String email, Role role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
-    }
-
-    public EmployeeResponseDTO() {
-    }
     @Override
     public String toString() {
         return "EmployeeResponseDTO{" +

@@ -1,7 +1,6 @@
 package com.project.employeService.entity;
 
-public enum Role
-{
+public enum Role {
     EMPLOYEE,
     MANAGER
 }

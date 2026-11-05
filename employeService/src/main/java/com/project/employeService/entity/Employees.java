@@ -3,7 +3,7 @@ package com.project.employeService.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "employees",uniqueConstraints = {@UniqueConstraint(name = "uk_employees_email",columnNames = "email")})
+@Table(name = "employees", uniqueConstraints = {@UniqueConstraint(name = "uk_employees_email", columnNames = "email")})
 public class Employees {
 
     @Id
@@ -13,7 +13,19 @@ public class Employees {
     private String email;
     private String password;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
+
+    public Employees(Long id, String name, String email, String password, Role role) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public Employees() {
+    }
 
     public Long getId() {
         return id;
@@ -53,16 +65,5 @@ public class Employees {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public Employees(Long id, String name, String email, String password, Role role) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public Employees() {
     }
 }

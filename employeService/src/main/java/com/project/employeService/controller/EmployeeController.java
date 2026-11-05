@@ -6,6 +6,7 @@ import com.project.employeService.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,14 +20,19 @@ public class EmployeeController {
     }
 
     @PostMapping("/employee")
-    public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO request){
-       EmployeeResponseDTO response= employeeService.createEmployee(request);
-       return  ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO request) {
+        EmployeeResponseDTO response = employeeService.createEmployee(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/emp/{id}")
-    public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable Long id){
-        return ResponseEntity.ok(employeeService.getEmpById(id));
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(employeeService.getEmpById(id, authentication));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<EmployeeResponseDTO> me(Authentication authentication) {
+        return ResponseEntity.ok(employeeService.getByEmail(authentication.getName()));
     }
 
 }

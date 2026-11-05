@@ -2,8 +2,7 @@ package com.project.employeService.Exception;
 
 import java.time.LocalDateTime;
 
-public class ErrorResponse
-{
+public class ErrorResponse {
     private int status;
     private String message;
     private LocalDateTime timeStamp;
