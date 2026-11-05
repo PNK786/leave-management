@@ -22,10 +22,10 @@ public class EmployeServiceApplication {
         return args -> {
             if (repo.existsByEmailIgnoreCase("admin@company.com")) {
                 Employees admin = new Employees();
-                admin.setName("Admin");
-                admin.setEmail("admin@company.com");
+                admin.setName("MANAGER");
+                admin.setEmail("manager@company.com");
                 admin.setPassword(encoder.encode(adminPassword));
-                admin.setRole(Role.valueOf("ADMIN"));
+                admin.setRole(Role.valueOf("MANAGER"));
                 repo.save(admin);
             }
         };

@@ -43,22 +43,24 @@ public class LeaveController {
     }
 
     @PutMapping("/leaves/{id}/reject")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<LeaveResponseDTO> rejectLeaveRequest(@PathVariable Long id) {
         LeaveResponseDTO rejectRequest = leaveManagementService.rejectLeave(id);
         return ResponseEntity.status(HttpStatus.OK).body(rejectRequest);
     }
 
     @PutMapping("/leaves/{id}/approve")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<LeaveResponseDTO> approveLeaveRequest(@PathVariable Long id) {
         LeaveResponseDTO rejectRequest = leaveManagementService.approveLeave(id);
         return ResponseEntity.status(HttpStatus.OK).body(rejectRequest);
     }
 
     @GetMapping("/leaves/balance/{empId}")
-    public ResponseEntity<LeaveBalanceDTO> getBalance(@PathVariable Long empId){
+    public ResponseEntity<LeaveBalanceDTO> getBalance(@PathVariable Long empId) {
 
-          LeaveBalanceDTO balanceLeaves=leaveManagementService.getBalance(empId);
-          return ResponseEntity.ok(balanceLeaves);
+        LeaveBalanceDTO balanceLeaves = leaveManagementService.getBalance(empId);
+        return ResponseEntity.ok(balanceLeaves);
     }
 
 }
