@@ -53,7 +53,7 @@ public class EmployeeService {
         boolean isManager = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"));
 
         boolean isOwner=found.getEmail().equalsIgnoreCase(authentication.getName());
-        if (isManager && isOwner) {
+        if (!isManager && !isOwner) {
             throw new AccessDeniedException("You are not allowed to view this employee");
         }
 

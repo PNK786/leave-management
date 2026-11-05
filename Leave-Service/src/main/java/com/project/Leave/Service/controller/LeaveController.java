@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,15 +26,19 @@ public class LeaveController {
     }
 
     @PostMapping("/leaves")
-    public ResponseEntity<LeaveResponseDTO> leaveRequest(@Valid @RequestBody LeaveRequestDTO request) {
-        LeaveResponseDTO empResponse = leaveManagementService.applyLeave(request);
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<LeaveResponseDTO> leaveRequest(@Valid @RequestBody LeaveRequestDTO request,@AuthenticationPrincipal Jwt jwt) {
+
+        Long employeeId =  Long.valueOf(jwt.getClaimAsString("employeeId"));
+        LeaveResponseDTO empResponse = leaveManagementService.applyLeave(request,employeeId);
         return ResponseEntity.status(HttpStatus.CREATED).body(empResponse);
     }
 
-    @GetMapping("/leaves/my/{empId}")
-    public ResponseEntity<List<LeaveResponseDTO>> getAllLeaveRequestByEmpId(@PathVariable Long empId) {
-        List<LeaveResponseDTO> allLeaves = leaveManagementService.allLeaveRequests(empId);
-        return ResponseEntity.ok(allLeaves);
+    @GetMapping("/leaves/my")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<List<LeaveResponseDTO>> getMyLeaves(@AuthenticationPrincipal Jwt jwt) {
+        Long employeeId = Long.valueOf(jwt.getClaimAsString("employeeId"));
+        return ResponseEntity.ok(leaveManagementService.allLeaveRequests(employeeId));
     }
 
     @GetMapping("/leaves/pending")
@@ -56,11 +62,11 @@ public class LeaveController {
         return ResponseEntity.status(HttpStatus.OK).body(rejectRequest);
     }
 
-    @GetMapping("/leaves/balance/{empId}")
-    public ResponseEntity<LeaveBalanceDTO> getBalance(@PathVariable Long empId) {
-
-        LeaveBalanceDTO balanceLeaves = leaveManagementService.getBalance(empId);
-        return ResponseEntity.ok(balanceLeaves);
+    @GetMapping("/leaves/balance")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<LeaveBalanceDTO> getBalance(@AuthenticationPrincipal Jwt jwt) {
+        Long employeeId = Long.valueOf(jwt.getClaimAsString("employeeId"));
+        return ResponseEntity.ok(leaveManagementService.getBalance(employeeId));
     }
 
 }

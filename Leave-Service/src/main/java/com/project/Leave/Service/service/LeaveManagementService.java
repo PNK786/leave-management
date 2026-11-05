@@ -26,9 +26,10 @@ public class LeaveManagementService {
         this.leaveManagementRepository = leaveManagementRepository;
     }
 
-    public LeaveResponseDTO applyLeave(LeaveRequestDTO request) {
+    public LeaveResponseDTO applyLeave(LeaveRequestDTO request,Long employeeId) {
         Leave stored = new Leave();
-        stored.setEmployeeId(request.getEmpId());
+        stored.setId(request.getEmpId());
+        stored.setEmployeeId(employeeId);
         stored.setReason(request.getReason());
         stored.setLeaveType(request.getLeaveType());
         stored.setStartDate(request.getStartDate());
