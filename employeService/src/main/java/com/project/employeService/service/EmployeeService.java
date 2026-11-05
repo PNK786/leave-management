@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
@@ -48,7 +50,7 @@ public class EmployeeService {
     public EmployeeResponseDTO getEmpById(Long id, Authentication authentication) {
         Employees found = employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFound("Employee not found with Employee Id" + id));
 
-        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> Objects.equals(a.getAuthority(), "ROLE_MANAGER"));
 
         if (isAdmin && !found.getEmail().equals(authentication.getName())) {
             throw new AccessDeniedException("You are not allowed to view this employee");

@@ -8,6 +8,7 @@ import com.project.Leave.Service.service.LeaveManagementService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class LeaveController {
     }
 
     @GetMapping("/leaves/pending")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<List<LeaveResponseDTO>> accessPendingRequest() {
         List<LeaveResponseDTO> pendingRequests = leaveManagementService.pendingLeaveRequests(LeaveStatus.PENDING);
         return ResponseEntity.ok(pendingRequests);
