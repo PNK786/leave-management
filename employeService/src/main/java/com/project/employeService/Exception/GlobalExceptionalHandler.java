@@ -43,7 +43,7 @@ public class GlobalExceptionalHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> resourceNotFound(AccessDeniedException ex) {
+    public ResponseEntity<ErrorResponse> resourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(404, ex.getMessage()));
     }

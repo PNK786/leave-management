@@ -28,7 +28,7 @@ public class LeaveManagementService {
 
     public LeaveResponseDTO applyLeave(LeaveRequestDTO request,Long employeeId) {
         Leave stored = new Leave();
-        stored.setId(request.getEmpId());
+        stored.setId(employeeId);
         stored.setEmployeeId(employeeId);
         stored.setReason(request.getReason());
         stored.setLeaveType(request.getLeaveType());
