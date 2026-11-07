@@ -28,7 +28,6 @@ public class LeaveManagementService {
 
     public LeaveResponseDTO applyLeave(LeaveRequestDTO request,Long employeeId) {
         Leave stored = new Leave();
-        stored.setId(employeeId);
         stored.setEmployeeId(employeeId);
         stored.setReason(request.getReason());
         stored.setLeaveType(request.getLeaveType());
@@ -39,6 +38,9 @@ public class LeaveManagementService {
         Leave leaveResponse = leaveManagementRepository.save(stored);
         LeaveResponseDTO response = new LeaveResponseDTO();
         response.setLeaveId(leaveResponse.getId());
+        response.setEmployeeId(leaveResponse.getEmployeeId());
+        response.setStartDate(leaveResponse.getStartDate());
+        response.setEndDate(leaveResponse.getEndDate());
         response.setDuration(ChronoUnit.DAYS.between(stored.getStartDate(), stored.getEndDate()) + 1);
         response.setLeaveType(leaveResponse.getLeaveType());
         response.setReason(leaveResponse.getReason());
