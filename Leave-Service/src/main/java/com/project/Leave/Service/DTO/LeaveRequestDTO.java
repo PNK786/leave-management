@@ -9,11 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @ValidDateRange
-public class LeaveRequestDTO
-{
-//    @NotNull(message = "empId is Required")
-//    @Positive(message = "Employee id must be positive")
-//    private Long empId;
+public class LeaveRequestDTO {
+
     @NotBlank(message = "Reason is Required")
     private String reason;
     @NotNull(message = "Start date is required")
@@ -26,13 +23,15 @@ public class LeaveRequestDTO
     private LeaveType leaveType;
 
 
-//    public Long getEmpId() {
-//        return empId;
-//    }
-//
-//    public void setEmpId(Long empId) {
-//        this.empId = empId;
-//    }
+    public LeaveRequestDTO() {
+    }
+
+    public LeaveRequestDTO(String reason, LocalDate startDate, LocalDate endDate, LeaveType leaveType) {
+        this.reason = reason;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.leaveType = leaveType;
+    }
 
     public String getReason() {
         return reason;
@@ -58,24 +57,11 @@ public class LeaveRequestDTO
         this.endDate = endDate;
     }
 
-
-
     public LeaveType getLeaveType() {
         return leaveType;
     }
 
     public void setLeaveType(LeaveType leaveType) {
-        this.leaveType = leaveType;
-    }
-
-    public LeaveRequestDTO() {
-    }
-
-    public LeaveRequestDTO(Long empId, String reason, LocalDate startDate, LocalDate endDate, LeaveType leaveType) {
-//        this.empId = empId;
-        this.reason = reason;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.leaveType = leaveType;
     }
 }

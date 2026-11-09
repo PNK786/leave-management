@@ -72,9 +72,9 @@ public class LeaveManagementService {
 
     public List<LeaveResponseDTO> pendingLeaveRequests(LeaveStatus status) {
         List<Leave> byLeaveStatus = leaveManagementRepository.findBystatus(status);
-        if (byLeaveStatus.isEmpty()) {
-            throw new LeaveRecordNotFoundException("no Leave record found with this status  " + status);
-        }
+//        if (byLeaveStatus.isEmpty()) {
+//            throw new LeaveRecordNotFoundException("no Leave record found with this status  " + status);
+//        }
         return byLeaveStatus.stream().map(this::toResponse)
                 .toList();
     }
@@ -88,13 +88,7 @@ public class LeaveManagementService {
         }
         leave.setStatus(LeaveStatus.APPROVED);
         Leave rejected = leaveManagementRepository.save(leave);
-        LeaveResponseDTO response = new LeaveResponseDTO();
-        response.setLeaveId(rejected.getId());
-        response.setLeaveType(rejected.getLeaveType());
-        response.setReason(rejected.getReason());
-        response.setDuration(ChronoUnit.DAYS.between(rejected.getStartDate(), rejected.getEndDate()) + 1);
-        response.setStatus(rejected.getStatus());
-        return response;
+        return toResponse(rejected);
     }
 
     public LeaveResponseDTO rejectLeave(Long id) {
@@ -105,13 +99,7 @@ public class LeaveManagementService {
         }
         leave.setStatus(LeaveStatus.REJECTED);
         Leave rejected = leaveManagementRepository.save(leave);
-        LeaveResponseDTO response = new LeaveResponseDTO();
-        response.setLeaveId(rejected.getId());
-        response.setLeaveType(rejected.getLeaveType());
-        response.setReason(rejected.getReason());
-        response.setDuration(ChronoUnit.DAYS.between(rejected.getStartDate(), rejected.getEndDate()) + 1);
-        response.setStatus(rejected.getStatus());
-        return response;
+        return toResponse(rejected);
     }
 
     public int usedDays(Long employeeId, LeaveType leaveType, int year) {

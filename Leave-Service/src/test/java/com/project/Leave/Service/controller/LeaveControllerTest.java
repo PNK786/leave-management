@@ -41,8 +41,10 @@ class LeaveControllerTest {
     // ---------- helpers ----------
     private RequestPostProcessor employee(long id) {
         return SecurityMockMvcRequestPostProcessors.jwt()
-                .jwt(j -> j.claim("employeeId", String.valueOf(id)))
-                .authorities(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
+                .jwt(j -> j.claim("employeeId", id))
+                .authorities(
+                        new SimpleGrantedAuthority("ROLE_EMPLOYEE")
+                );
     }
 
     private RequestPostProcessor manager() {

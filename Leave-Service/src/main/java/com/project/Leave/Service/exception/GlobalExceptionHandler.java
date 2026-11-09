@@ -34,8 +34,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(LeaveResponseException.class)
-    public ResponseEntity<LeaveResponse> leaveStatusRejected(LeaveResponseException ex){
-         LeaveResponse response= new LeaveResponse(HttpStatus.FORBIDDEN.value(),ex.getMessage());
-         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    public ResponseEntity<LeaveResponse> leaveStatusRejected(
+            LeaveResponseException ex) {
+
+        LeaveResponse response = new LeaveResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
     }
 }

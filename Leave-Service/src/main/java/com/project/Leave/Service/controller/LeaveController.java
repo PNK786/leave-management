@@ -27,17 +27,18 @@ public class LeaveController {
 
     @PostMapping("/leaves")
     @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<LeaveResponseDTO> leaveRequest(@Valid @RequestBody LeaveRequestDTO request,@AuthenticationPrincipal Jwt jwt) {
-
-        Long employeeId =  Long.valueOf(jwt.getClaimAsString("employeeId"));
-        LeaveResponseDTO empResponse = leaveManagementService.applyLeave(request,employeeId);
+    public ResponseEntity<LeaveResponseDTO> leaveRequest(@Valid @RequestBody LeaveRequestDTO request, @AuthenticationPrincipal Jwt jwt) {
+        Object employeeIdClaim = jwt.getClaim("employeeId");
+        Long employeeId = ((Number) employeeIdClaim).longValue();
+        LeaveResponseDTO empResponse = leaveManagementService.applyLeave(request, employeeId);
         return ResponseEntity.status(HttpStatus.CREATED).body(empResponse);
     }
 
     @GetMapping("/leaves/my")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<List<LeaveResponseDTO>> getMyLeaves(@AuthenticationPrincipal Jwt jwt) {
-        Long employeeId = Long.valueOf(jwt.getClaimAsString("employeeId"));
+        Object employeeIdClaim = jwt.getClaim("employeeId");
+        Long employeeId = ((Number) employeeIdClaim).longValue();
         return ResponseEntity.ok(leaveManagementService.allLeaveRequests(employeeId));
     }
 
@@ -65,7 +66,8 @@ public class LeaveController {
     @GetMapping("/leaves/balance")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<LeaveBalanceDTO> getBalance(@AuthenticationPrincipal Jwt jwt) {
-        Long employeeId = Long.valueOf(jwt.getClaimAsString("employeeId"));
+        Object employeeIdClaim = jwt.getClaim("employeeId");
+        Long employeeId = ((Number) employeeIdClaim).longValue();
         return ResponseEntity.ok(leaveManagementService.getBalance(employeeId));
     }
 

@@ -12,7 +12,7 @@ public class    LeaveResponseDTO
    private String reason;
    private LocalDate startDate;
    private LocalDate endDate;
-   private Long Duration;
+   private Long duration;
    private LeaveType leaveType;
    private LeaveStatus status;
 
@@ -33,11 +33,11 @@ public class    LeaveResponseDTO
     }
 
     public Long getDuration() {
-        return Duration;
+        return duration;
     }
 
     public void setDuration(Long duration) {
-        Duration = duration;
+        duration = duration;
     }
 
     public LeaveType getLeaveType() {
@@ -89,7 +89,7 @@ public class    LeaveResponseDTO
         this.reason = reason;
         this.startDate = startDate;
         this.endDate = endDate;
-        Duration = duration;
+        duration = duration;
         this.leaveType = leaveType;
         this.status = status;
     }
