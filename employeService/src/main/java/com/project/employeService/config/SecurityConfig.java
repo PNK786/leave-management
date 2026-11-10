@@ -38,7 +38,9 @@ public class SecurityConfig {
                          .requestMatchers(HttpMethod.POST, "/api/employee").permitAll()
                          .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                          .requestMatchers(HttpMethod.POST, "/api/manager/**").hasRole("MANAGER")
-                       .anyRequest().authenticated()).httpBasic(Customizer.withDefaults());
+                       .anyRequest().authenticated()).oauth2ResourceServer(oauth2 ->
+                oauth2.jwt(Customizer.withDefaults())
+        );
         return http.build();
     }
 

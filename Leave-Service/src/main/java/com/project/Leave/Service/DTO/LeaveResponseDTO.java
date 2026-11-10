@@ -37,7 +37,7 @@ public class    LeaveResponseDTO
     }
 
     public void setDuration(Long duration) {
-        duration = duration;
+        this.duration = duration;
     }
 
     public LeaveType getLeaveType() {
@@ -89,7 +89,7 @@ public class    LeaveResponseDTO
         this.reason = reason;
         this.startDate = startDate;
         this.endDate = endDate;
-        duration = duration;
+        this.duration = duration;
         this.leaveType = leaveType;
         this.status = status;
     }

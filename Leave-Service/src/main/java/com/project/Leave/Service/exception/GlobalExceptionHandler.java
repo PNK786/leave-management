@@ -45,4 +45,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(response);
     }
+
+    @ExceptionHandler(LeaveStatusConflictException.class)
+    public ResponseEntity<LeaveResponse> leaveStatus( LeaveStatusConflictException ex){
+        LeaveResponse response = new LeaveResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(response);
+    }
 }

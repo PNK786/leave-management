@@ -50,9 +50,9 @@ public class LeaveManagementService {
 
     public List<LeaveResponseDTO> allLeaveRequests(Long employeeId) {
         List<Leave> leaves = leaveManagementRepository.findByEmployeeId(employeeId);
-        if (leaves.isEmpty()) {
-            throw new LeaveRecordNotFoundException("no Leave record found with this id" + employeeId);
-        }
+//        if (leaves.isEmpty()) {
+//            throw new LeaveRecordNotFoundException("no Leave record found with this id" + employeeId);
+//        }
         return leaves.stream().map(leave -> toResponse(leave))
                 .toList();
     }
@@ -71,7 +71,7 @@ public class LeaveManagementService {
     }
 
     public List<LeaveResponseDTO> pendingLeaveRequests(LeaveStatus status) {
-        List<Leave> byLeaveStatus = leaveManagementRepository.findBystatus(status);
+        List<Leave> byLeaveStatus = leaveManagementRepository.findByStatus(status);
 //        if (byLeaveStatus.isEmpty()) {
 //            throw new LeaveRecordNotFoundException("no Leave record found with this status  " + status);
 //        }

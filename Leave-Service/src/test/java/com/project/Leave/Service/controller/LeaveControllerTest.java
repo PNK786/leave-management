@@ -5,6 +5,8 @@ import com.project.Leave.Service.DTO.LeaveResponseDTO;
 import com.project.Leave.Service.config.SecurityConfig;
 import com.project.Leave.Service.entity.LeaveStatus;
 import com.project.Leave.Service.entity.LeaveType;
+import com.project.Leave.Service.exception.LeaveRecordNotFoundException;
+import com.project.Leave.Service.exception.LeaveStatusConflictException;   // adjust to your exception
 import com.project.Leave.Service.service.LeaveManagementService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,10 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;   // Boot 
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,20 +41,21 @@ class LeaveControllerTest {
     @Autowired MockMvc mockMvc;
 
     @MockitoBean LeaveManagementService service;
-    @MockitoBean JwtDecoder jwtDecoder;   // satisfies the resource-server config; not used by jwt() helper
+    @MockitoBean JwtDecoder jwtDecoder;   // used by the invalid/expired token tests
+
+    private final LocalDate tomorrow = LocalDate.now().plusDays(1);
+    private final LocalDate dayAfter = LocalDate.now().plusDays(2);
 
     // ---------- helpers ----------
     private RequestPostProcessor employee(long id) {
         return SecurityMockMvcRequestPostProcessors.jwt()
                 .jwt(j -> j.claim("employeeId", id))
-                .authorities(
-                        new SimpleGrantedAuthority("ROLE_EMPLOYEE")
-                );
+                .authorities(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
     }
 
     private RequestPostProcessor manager() {
         return SecurityMockMvcRequestPostProcessors.jwt()
-                .jwt(j -> j.claim("employeeId", "99"))
+                .jwt(j -> j.claim("employeeId", 99L))
                 .authorities(new SimpleGrantedAuthority("ROLE_MANAGER"));
     }
 
@@ -72,10 +78,7 @@ class LeaveControllerTest {
                 start, end, type == null ? "null" : "\"" + type + "\"");
     }
 
-    private final LocalDate tomorrow = LocalDate.now().plusDays(1);
-    private final LocalDate dayAfter = LocalDate.now().plusDays(2);
-
-    // ---------- POST /api/leaves ----------
+    // ================= POST /api/leaves =================
     @Test
     void applyLeave_valid_returns201_andUsesEmployeeIdFromJwt() throws Exception {
         when(service.applyLeave(any(), eq(4L))).thenReturn(response(1L, LeaveStatus.PENDING));
@@ -162,7 +165,7 @@ class LeaveControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // ---------- GET /api/leaves/my ----------
+    // ================= GET /api/leaves/my =================
     @Test
     void getMyLeaves_returns200_withList() throws Exception {
         when(service.allLeaveRequests(4L)).thenReturn(
@@ -175,6 +178,15 @@ class LeaveControllerTest {
     }
 
     @Test
+    void getMyLeaves_noHistory_returns200_emptyArray() throws Exception {
+        when(service.allLeaveRequests(4L)).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/leaves/my").with(employee(4)))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
+    }
+
+    @Test
     void getMyLeaves_withoutToken_returns401() throws Exception {
         mockMvc.perform(get("/api/leaves/my")).andExpect(status().isUnauthorized());
     }
@@ -184,7 +196,7 @@ class LeaveControllerTest {
         mockMvc.perform(get("/api/leaves/my").with(manager())).andExpect(status().isForbidden());
     }
 
-    // ---------- GET /api/leaves/pending ----------
+    // ================= GET /api/leaves/pending =================
     @Test
     void pending_asManager_returns200() throws Exception {
         when(service.pendingLeaveRequests(LeaveStatus.PENDING))
@@ -210,7 +222,7 @@ class LeaveControllerTest {
                 .andExpect(jsonPath("$.length()").value(0));
     }
 
-    // ---------- PUT approve / reject ----------
+    // ================= PUT approve =================
     @Test
     void approve_asManager_returns200() throws Exception {
         when(service.approveLeave(1L)).thenReturn(response(1L, LeaveStatus.APPROVED));
@@ -240,6 +252,34 @@ class LeaveControllerTest {
     }
 
     @Test
+    void approve_nonexistentLeave_returns404() throws Exception {
+        when(service.approveLeave(99L))
+                .thenThrow(new LeaveRecordNotFoundException("Leave not found with id 99"));
+
+        mockMvc.perform(put("/api/leaves/99/approve").with(manager()).with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void approve_alreadyApproved_returns409() throws Exception {
+        when(service.approveLeave(1L))
+                .thenThrow(new LeaveStatusConflictException("Leave is already APPROVED"));
+
+        mockMvc.perform(put("/api/leaves/1/approve").with(manager()).with(csrf()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void approve_alreadyRejected_returns409() throws Exception {
+        when(service.approveLeave(2L))
+                .thenThrow(new LeaveStatusConflictException("Only PENDING leaves can be approved"));
+
+        mockMvc.perform(put("/api/leaves/2/approve").with(manager()).with(csrf()))
+                .andExpect(status().isConflict());
+    }
+
+    // ================= PUT reject =================
+    @Test
     void reject_asManager_returns200() throws Exception {
         when(service.rejectLeave(1L)).thenReturn(response(1L, LeaveStatus.REJECTED));
 
@@ -255,7 +295,34 @@ class LeaveControllerTest {
         verifyNoInteractions(service);
     }
 
-    // ---------- GET /api/leaves/balance ----------
+    @Test
+    void reject_nonexistentLeave_returns404() throws Exception {
+        when(service.rejectLeave(99L))
+                .thenThrow(new LeaveRecordNotFoundException("Leave not found with id 99"));
+
+        mockMvc.perform(put("/api/leaves/99/reject").with(manager()).with(csrf()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void reject_alreadyRejected_returns409() throws Exception {
+        when(service.rejectLeave(1L))
+                .thenThrow(new LeaveStatusConflictException("Leave is already REJECTED"));
+
+        mockMvc.perform(put("/api/leaves/1/reject").with(manager()).with(csrf()))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void reject_alreadyApproved_returns409() throws Exception {
+        when(service.rejectLeave(3L))
+                .thenThrow(new LeaveStatusConflictException("Only PENDING leaves can be rejected"));
+
+        mockMvc.perform(put("/api/leaves/3/reject").with(manager()).with(csrf()))
+                .andExpect(status().isConflict());
+    }
+
+    // ================= GET /api/leaves/balance =================
     @Test
     void balance_returns200_forJwtEmployee() throws Exception {
         when(service.getBalance(4L)).thenReturn(new LeaveBalanceDTO(4L, 2026,
@@ -270,5 +337,29 @@ class LeaveControllerTest {
     void balance_asManager_returns403() throws Exception {
         mockMvc.perform(get("/api/leaves/balance").with(manager()))
                 .andExpect(status().isForbidden());
+    }
+
+    // ================= invalid / expired JWT =================
+    @Test
+    void invalidJwt_returns401() throws Exception {
+        when(jwtDecoder.decode("garbage")).thenThrow(new BadJwtException("Invalid token"));
+
+        mockMvc.perform(get("/api/leaves/my").header("Authorization", "Bearer garbage"))
+                .andExpect(status().isUnauthorized());
+        verifyNoInteractions(service);
+    }
+
+    @Test
+    void expiredJwt_returns401() throws Exception {
+        when(jwtDecoder.decode("expired-token")).thenThrow(
+                new JwtValidationException("Jwt expired",
+                        List.of(new OAuth2Error("invalid_token", "Jwt expired", null))));
+
+        mockMvc.perform(post("/api/leaves").with(csrf())
+                        .header("Authorization", "Bearer expired-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body("trip", tomorrow, dayAfter, "CASUAL")))
+                .andExpect(status().isUnauthorized());
+        verifyNoInteractions(service);
     }
 }
